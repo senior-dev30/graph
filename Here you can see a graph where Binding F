@@ -1,0 +1,24 @@
+Here you can see a graph where Binding Function is depicted as a function of Concentration in µM.
+
+Graph is deceptively simple but there's more than meets the eye! Firstly, it shows scatterplot of data points---
+these come as an array of (x,y) coordinates and need to be displayed as solid black circles just how they are displayed on this picture
+ (you can choose yourself what data points to display---I don't have data points for this particular graph at hand).
+
+Secondly, this graph displays an interpolation through these data points as a blue solid line. 
+The color of the line and thickness are chosen according to Arctoris guidelines, and should be reproduced exactly. 
+I do not have the analytic formulae for this particular graph, but you can assume it is a sigmoid function 
+(https://en.wikipedia.org/wiki/Sigmoid_function) shifted to the right, and you are given a formula for it 
+(you can take the one from Wikipedia and shift it to the right in this exercise).
+
+Thirdly, it is important to choose the toolkit where you have full control over position of axis labels and how axis ticks are displayed. 
+Arctoris branding is extremely detailed about the positioning and look and feel of ticks, and we might be asked to reproduce the ticks look exactly. 
+Note that graphing toolkit should be able to display log scale x and/or y axis ticks like in the plot above. 
+It should be possible to control the font in axis tick labels, and for now please use one of the freely available google fonts (e.g., Lato).
+
+If you are at this point, then we've reproduced exactly how the graph looks in a pdf. 
+However, the reason we want html-based reports is because we want to add interactivity to our reports, and so the graph should be zoomable,
+ so that one can zoom in and zoom out on a particular area in a graph. 
+In zoomed in state it should be possible to pan left right top or bottom by grabbing the canvas and dragging it in the right direction. 
+When hovering over a data point the exact (x, y) values should be displayed in a hint. 
+The interactivity should be ascetically pleasing to use and responsive. 
+Please implement it as a stand-alone page we can open in a browser with hardwired scatter plot points and sigmoid function parameters.

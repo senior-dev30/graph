@@ -1,42 +1,42 @@
 [
-  {
-      "concentration" : 0.01,
-      "binding" : 2
-  },
-  {
-      "concentration" : 0.02,
-      "binding" : 2
-  },
-  {
-      "concentration" : 0.13,
-      "binding" : 1
-  },
-  {
-      "concentration" : 0.3,
-      "binding" : 3
-  },
-  {
-      "concentration" : 0.8,
-      "binding" : 5
-  },
-  {
-      "concentration" : 2.1,
-      "binding" : 6
-  },
-  {
-      "concentration" : 5,
-      "binding" : 15
-  },
-  {
-      "concentration" : 15,
-      "binding" : 31
-  },
-  {
-      "concentration" : 30,
-      "binding" : 51
-  },
-  {
-      "concentration" : 72,
-      "binding" : 90
-  }
+    {
+        "concentration" : 0.01,
+        "binding" : 2
+    },
+    {
+        "concentration" : 0.02,
+        "binding" : 2
+    },
+    {
+        "concentration" : 0.13,
+        "binding" : 1
+    },
+    {
+        "concentration" : 0.3,
+        "binding" : 3
+    },
+    {
+        "concentration" : 0.8,
+        "binding" : 5
+    },
+    {
+        "concentration" : 2.1,
+        "binding" : 6
+    },
+    {
+        "concentration" : 5,
+        "binding" : 15
+    },
+    {
+        "concentration" : 15,
+        "binding" : 31
+    },
+    {
+        "concentration" : 30,
+        "binding" : 51
+    },
+    {
+        "concentration" : 72,
+        "binding" : 90
+    }
 ]

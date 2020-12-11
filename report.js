@@ -1,14 +1,25 @@
-var margin = {top: 10, right: 245, bottom: 60, left: 255},
+var margin = {top: 20, right: 20, bottom: 100, left: 50},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
+
+var y = d3.scaleLog()
+    .range([height, 0]);
 
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
+    .call(d3.zoom()
+    .scaleExtent([1, 4])
+    .on("zoom", zoomed))
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+
 var x = d3.scaleLog()
+    .domain([0.01, 100])
+    .range([0, width]);
+
+var x0 = d3.scaleLog()
     .domain([0.01, 100])
     .range([0, width]);
 
@@ -16,25 +27,28 @@ var y = d3.scaleLinear()
     .domain([0, 80])
     .range([ height, 0]);
 
+var y0 = d3.scaleLinear()
+    .domain([0, 80])
+    .range([ height, 0]);
+
+var line = d3.line()
+    .x(d => x(d[0]))
+    .y(d => y(d[1]));
+
 svg.append("g")
+    .attr("class", "axis axis--x")
     .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x).tickFormat(d3.format(".2")))
-    .selectAll("text")
-    .attr("y", 0)
-    .attr("x", 9)
-    .attr("dy", ".35em")
-    .attr("transform", "rotate(90)")
-    .style("text-anchor", "start");
+    .call(d3.axisBottom(x).tickFormat(d3.format("")));
 
 svg.append("g")
-    .call(d3.axisLeft(y));
-
-svg.append("text")             
-    .attr("transform",
-          "translate(" + (width/2) + " ," + 
-                        (height + margin.top + 40) + ")")
-    .style("text-anchor", "middle")
-    .text("Concentration (uM)");
+    .attr("class", "axis axis--y")
+    .call(d3.axisLeft(y))
+    .append("text")
+    .attr("class", "axis-title")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 6)
+    .attr("dy", ".71em")
+    .style("text-anchor", "end");
 
 svg.append("text")
     .attr("transform", "rotate(-90)")
@@ -42,39 +56,130 @@ svg.append("text")
     .attr("x",0 - (height / 2))
     .attr("dy", "1em")
     .style("text-anchor", "middle")
-    .text("Binding function");     
+    .text("Binding function");  
+
+svg.append("text")             
+    .attr("transform",
+          "translate(" + (width/2) + " ," + 
+                        (height + margin.top + 40) + ")")
+    .style("text-anchor", "middle")
+    .text("Concentration (µM)");
+
+svg.append("defs").append("clipPath")
+    .attr("id", "clip")
+    .append("rect")
+    .attr("width", width)
+    .attr("height", height);
+
+var div = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+var path;
+var dots;
+
+var ticks = d3.select(".axis--x").selectAll(".tick text");
+ticks.each(function(_,i){
+    // console.log(_);
+    // if(i%9 !== 0) d3.select(this).remove();
+    var arr = [0.01, 0.1, 1, 10, 100, 100];
+
+    if (!arr.includes(_)){
+        d3.select(this).remove();
+    }
+});
 
 d3.json("data.json")
 .then((data)=> {
-    console.log(data);
-
-    svg.append('g')
-    .selectAll("dot")
-    .data(data)
-    .enter()
-    .append("circle")
-    .attr("cx", function (d) { return x(d.concentration); } )
-    .attr("cy", function (d) { return y(d.binding); } )
-    .attr("r", 3)
-    .style("fill", "#111111");
-
-    var lineGenerator = d3.line()
-    .x(d => x(d[0]))
-    .y(d => y(d[1]));
-
     var regressionGenerator = d3.regressionPoly()
         .x(d => d.concentration)
         .y(d => d.binding)
         .domain([0.01, 100])(data);
 
-    svg.append("path")
-      .datum(regressionGenerator)
-      .attr("fill", "none")
-      .attr("stroke", "steelblue")
-      .attr("stroke-width", 1.5)
-      .attr("stroke-linejoin", "round")
-      .attr("stroke-linecap", "round")
-      .attr("d", lineGenerator);
+    dots =
+        svg
+        .append("g")
+        .attr("class","g-line")
+        .selectAll("dot")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("cx", function (d) { return x(d.concentration); } )
+        .attr("cy", function (d) { return y(d.binding); } )
+        .attr("r", 3)
+        .style("fill", "#111111")
+        .on("mouseover", function(d, i) {
+            div.transition()
+             .duration(200)
+             .style("opacity", .9);
     
-    console.log(regressionGenerator);
+            div.html(`x: ${d.concentration}<br/>y: ${d.binding}`)
+             .style("left", (d3.event.pageX) + "px")
+             .style("top", (d3.event.pageY - 28) + "px");
+
+             d3.select(this).attr("r", 5);
+        })
+        .on("mouseout", function(d) {
+            div.transition()
+            .duration(500)
+            .style("opacity", 0);
+
+            d3.select(this).attr("r", 3);
+        });
+
+    path =     
+        svg
+        .append("path")
+        .attr("class","g-line")
+        .datum(regressionGenerator)
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-linejoin", "round")
+        .attr("stroke-linecap", "round")
+        .attr("stroke-width", 1.5)
+        .attr("d", line);
+
+    const pathLength = path.node().getTotalLength();
+    const transitionPath = d3
+        .transition()
+        .ease(d3.easeSin)
+        .duration(2500);
+
+    path
+        .attr("stroke-dashoffset", pathLength)
+        .attr("stroke-dasharray", pathLength)
+        .transition(transitionPath)
+        .attr("stroke-dashoffset", 0);
+
+    svg.append("rect")
+        .attr("width", width)
+        .attr("height", height)
+        .style("fill", "none")
+        // .style("pointer-events", "all")
+        // .call(d3.zoom()
+        // .scaleExtent([1 / 2, 4])
+        // .on("zoom", zoomed));
 });
+
+function zoomed() {
+    var t = d3.event.transform;
+    x.domain(t.rescaleX(x0).domain());
+    y.domain(t.rescaleY(y0).domain());
+    path.attr("d", line);
+    dots.attr("cx", function (d) { return x(d.concentration); } )
+    .attr("cy", function (d) { return y(d.binding); } );
+
+    svg.select(".axis--x").call(d3.axisBottom(x).tickFormat(d3.format("")));
+    svg.select(".axis--y").call(d3.axisLeft(y));
+
+    var ticks = d3.select(".axis--x").selectAll(".tick text");
+    ticks.each(function(_,i){
+        // console.log(_);
+        // if(i%9 !== 0) d3.select(this).remove();
+        var arr = [0.01, 0.1, 1, 10, 100, 100];
+
+        if (!arr.includes(_)){
+            d3.select(this).remove();
+        }
+    });
+}  
