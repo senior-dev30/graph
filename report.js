@@ -1,6 +1,9 @@
+var widthW = window.innerWidth;
+var heightW = window.innerHeight;
+
 var margin = {top: 20, right: 20, bottom: 100, left: 50},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    width = widthW * 3 / 4 - margin.left - margin.right,
+    height = heightW * 3 / 4 - margin.top - margin.bottom;
 
 var y = d3.scaleLog()
     .range([height, 0]);
@@ -63,7 +66,7 @@ svg.append("text")
           "translate(" + (width/2) + " ," + 
                         (height + margin.top + 40) + ")")
     .style("text-anchor", "middle")
-    .text("Concentration (µM)");
+    .text("Concentration (uM)");
 
 svg.append("defs").append("clipPath")
     .attr("id", "clip")
@@ -94,7 +97,7 @@ d3.json("data.json")
     var regressionGenerator = d3.regressionPoly()
         .x(d => d.concentration)
         .y(d => d.binding)
-        .domain([0.01, 100])(data);
+        .domain([0.01, 200])(data);
 
     dots =
         svg
@@ -113,9 +116,9 @@ d3.json("data.json")
              .duration(200)
              .style("opacity", .9);
     
-            div.html(`x: ${d.concentration}<br/>y: ${d.binding}`)
+            div.html(`<div><span class="title">x:</span> ${d.concentration}</div><div><span class="title">y:</span>${d.binding}</div>`)
              .style("left", (d3.event.pageX) + "px")
-             .style("top", (d3.event.pageY - 28) + "px");
+             .style("top", (d3.event.pageY - 58) + "px");
 
              d3.select(this).attr("r", 5);
         })
