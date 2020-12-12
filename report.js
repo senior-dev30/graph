@@ -73,7 +73,7 @@ svg.append("text")
           "translate(" + (width/2) + " ," + 
                         (height + margin.top + 40) + ")")
     .style("text-anchor", "middle")
-    .text("Concentration (uM)");
+    .text("Concentration (µM)");
 
 svg.append("defs").append("clipPath")
     .attr("id", "clip")
@@ -90,8 +90,6 @@ var dots;
 
 var ticks = d3.select(".axis--x").selectAll(".tick text");
 ticks.each(function(_,i){
-    // console.log(_);
-    // if(i%9 !== 0) d3.select(this).remove();
     var arr = [0.01, 0.1, 1, 10, 100, 100];
 
     if (!arr.includes(_)){
@@ -185,9 +183,6 @@ function zoomed() {
     if (t.k <= 1.5) {
         var ticks = d3.select(".axis--x").selectAll(".tick text");
         ticks.each(function(_,i){
-            // console.log(_);
-            // if(i%9 !== 0) d3.select(this).remove();
-            console.log(t.k);
             var arr = [0.01, 0.1, 1, 10, 100, 100];
             if (!arr.includes(_)){
                 d3.select(this).text("");
@@ -198,8 +193,6 @@ function zoomed() {
 
 var btnReset = document.getElementById("btn-reset");
 btnReset.addEventListener("click", () => {
-    console.log("AAA");
-
     container.transition()
     .duration(750)
     .call(zoom.transform, d3.zoomIdentity);
