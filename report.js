@@ -8,12 +8,16 @@ var margin = {top: 20, right: 20, bottom: 100, left: 50},
 var y = d3.scaleLog()
     .range([height, 0]);
 
-var svg = d3.select("body").append("svg")
+var zoom = d3.zoom()
+.scaleExtent([1, 4])
+.on("zoom", zoomed);
+
+var container = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
-    .call(d3.zoom()
-    .scaleExtent([1, 4])
-    .on("zoom", zoomed))
+    .call(zoom)
+
+var svg = container
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -38,10 +42,13 @@ var line = d3.line()
     .x(d => x(d[0]))
     .y(d => y(d[1]));
 
+var xAsix = d3.axisBottom(x)
+            .tickFormat(d3.format(""));
+
 svg.append("g")
     .attr("class", "axis axis--x")
     .attr("transform", "translate(0," + height + ")")
-    .call(d3.axisBottom(x).tickFormat(d3.format("")));
+    .call(xAsix);
 
 svg.append("g")
     .attr("class", "axis axis--y")
@@ -88,7 +95,7 @@ ticks.each(function(_,i){
     var arr = [0.01, 0.1, 1, 10, 100, 100];
 
     if (!arr.includes(_)){
-        d3.select(this).remove();
+        d3.select(this).text("");
     }
 });
 
@@ -172,17 +179,28 @@ function zoomed() {
     dots.attr("cx", function (d) { return x(d.concentration); } )
     .attr("cy", function (d) { return y(d.binding); } );
 
-    svg.select(".axis--x").call(d3.axisBottom(x).tickFormat(d3.format("")));
+    svg.select(".axis--x").call(xAsix);
     svg.select(".axis--y").call(d3.axisLeft(y));
 
-    var ticks = d3.select(".axis--x").selectAll(".tick text");
-    ticks.each(function(_,i){
-        // console.log(_);
-        // if(i%9 !== 0) d3.select(this).remove();
-        var arr = [0.01, 0.1, 1, 10, 100, 100];
-
-        if (!arr.includes(_)){
-            d3.select(this).remove();
-        }
-    });
+    if (t.k <= 1.5) {
+        var ticks = d3.select(".axis--x").selectAll(".tick text");
+        ticks.each(function(_,i){
+            // console.log(_);
+            // if(i%9 !== 0) d3.select(this).remove();
+            console.log(t.k);
+            var arr = [0.01, 0.1, 1, 10, 100, 100];
+            if (!arr.includes(_)){
+                d3.select(this).text("");
+            }
+        });
+    }
 }  
+
+var btnReset = document.getElementById("btn-reset");
+btnReset.addEventListener("click", () => {
+    console.log("AAA");
+
+    container.transition()
+    .duration(750)
+    .call(zoom.transform, d3.zoomIdentity);
+});

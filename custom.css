@@ -46,3 +46,8 @@ path.domain {
 .tooltip div {
     text-align: left;
 }
+
+button {
+    display: block;
+    margin: auto;
+}
